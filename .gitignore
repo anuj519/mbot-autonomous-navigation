@@ -1,0 +1,18 @@
+# Local editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Private course or experiment material
+*.db3
+*.mcap
+*.bag
+*.uf2
+private/
+course-code/
+rosbags/
+
+# Large raw media should be reviewed before publishing
+raw-media/
+
