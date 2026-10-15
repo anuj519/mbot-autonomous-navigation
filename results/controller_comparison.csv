@@ -1,0 +1,5 @@
+controller,command_speed_mps,mean_measured_speed_mps,mae_mps,rmse_mps,overshoot_percent
+Feedforward,0.1937,0.1606,0.0331,0.0502,
+PID,0.1937,0.1558,0.0379,0.0380,
+Feedforward + PID,0.1937,0.1916,0.0028,0.0036,2.1
+
