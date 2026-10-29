@@ -66,24 +66,16 @@ flowchart TD
 | Planning and navigation | Global planning, obstacle costs, exploration, integrated navigation | Upcoming course milestone |
 | Vision | Camera calibration and fiducial perception | Upcoming course milestone |
 
-## My contributions
+## Implementation and technical ownership
 
-### Motion and control
+- Implemented and tuned embedded feedforward/PID wheel-speed control, encoder odometry, and a C++ rotate-translate-rotate waypoint controller for repeatable physical motion.
+- Implemented motion-compensated LiDAR processing by interpolating robot poses across each scan, then constructed 5 cm-resolution occupancy grids with Bresenham ray tracing and bounded log-odds updates.
+- Implemented the Monte Carlo Localization pipeline, including the probabilistic odometry action model, LiDAR endpoint sensor model, particle propagation, weight normalization, circular-mean pose estimation, and low-variance resampling.
+- Integrated localization and mapping into an iterative SLAM loop that estimates pose, updates the occupancy grid, and publishes the map-to-odometry transform, particle cloud, and robot trajectory in ROS 2.
+- Profiled particle-filter runtime on the Raspberry Pi, evaluated localization against a reference trajectory, and tuned motion uncertainty using real-robot bags to eliminate duplicated/rotated map geometry.
+- Validated the complete autonomy stack on the physical MBot through controller experiments, autonomous waypoint runs, recorded-data replay, and an out-and-back maze-mapping demonstration.
 
-- Ran physical feedforward, PID, and combined-controller experiments and compared their tracking performance.
-- Tuned the selected wheel-speed controller through repeated physical tests.
-- Implemented and tested the rotate-translate-rotate motion-controller state machine in C++.
-- Repeated the square-driving experiment and adjusted effective differential-drive geometry to reduce systematic turning error.
-- Collected rosbag data and used odometry and velocity topics to evaluate physical behavior.
-
-### Mapping, localization, and SLAM
-
-- Contributed to physical bring-up and testing of the team-integrated ROS 2 mapping and localization pipeline.
-- Collected, replayed, and inspected real-robot data to evaluate occupancy-map alignment and localization behavior.
-- Contributed to MCL/SLAM parameter evaluation, including particle-count timing, trajectory comparison, and action-model noise tuning.
-- Documented the system architecture, test methodology, quantitative results, and physical-maze outcome.
-
-Checkpoint 2 was developed with **Brandon McDonald, Samuel DeKoninck, and Natasha Sieh**. Team-level results are identified as such; this portfolio does not imply sole authorship of the full course stack.
+This work was completed within a four-person ROB 330 project team. The implementation bullets above describe the end-to-end components I personally worked through and validated; the integrated checkpoint results were produced collaboratively.
 
 ## Engineering writeups
 

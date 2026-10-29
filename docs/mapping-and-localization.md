@@ -2,7 +2,7 @@
 
 ## Final Checkpoint 2 status
 
-Checkpoint 2 is complete. The team-integrated system performs occupancy-grid mapping, Monte Carlo Localization (MCL), and simultaneous localization and mapping on the physical MBot using wheel/IMU odometry and 2D LiDAR.
+Checkpoint 2 is complete. I implemented and validated the assigned occupancy-grid mapping, Monte Carlo Localization (MCL), and simultaneous localization and mapping pipeline on the physical MBot using wheel/IMU odometry and 2D LiDAR. The final system was integrated and evaluated with my project team.
 
 The final maze run used:
 
@@ -73,6 +73,8 @@ The MBot drove the maze out and back autonomously using the Checkpoint 1 rotate-
 
 ![Final Checkpoint 2 physical-maze map](../media/final-slam-map.png)
 
-## Contribution boundary
+## Implementation scope
 
-Checkpoint 2 was a team project with Brandon McDonald, Samuel DeKoninck, Natasha Sieh, and Anuj Arora. This portfolio presents team-integrated outcomes and Anuj's testing, tuning, evaluation, and documentation contributions without publishing course solution code or claiming sole implementation of the full stack.
+My work covered the complete assigned pipeline: LiDAR scan deskewing, discrete ray tracing, log-odds occupancy updates, probabilistic motion and sensor models, particle filtering, pose estimation, low-variance resampling, SLAM integration, parameter tuning, runtime profiling, and physical-robot validation.
+
+Checkpoint 2 was completed in a four-person team with Brandon McDonald, Samuel DeKoninck, and Natasha Sieh. The final repository and checkpoint results were collaboratively integrated, but this portfolio reflects the end-to-end components I personally implemented and validated. Course source code remains private.
