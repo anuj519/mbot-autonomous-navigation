@@ -1,56 +1,70 @@
 # Physical Mobile Robot Localization, Mapping & Navigation
 
-> A recruiter-facing engineering portfolio for a physical ROS 2 mobile robot developed in University of Michigan ROB 330.
+> A recruiter-facing engineering portfolio for a physical ROS 2 autonomy stack developed in University of Michigan ROB 330.
 
-**Status:** Checkpoint 1 complete; Checkpoint 2 in progress  
-**Platform:** Differential-drive MBot, Raspberry Pi 5, RP2040/Pico, wheel encoders, 2D LiDAR  
-**Software:** ROS 2 Jazzy, Ubuntu 24.04, C, C++, Python, RViz, Foxglove, rosbag
+- **Status:** Motion/odometry and SLAM checkpoints complete
+- **Platform:** Differential-drive MBot, Raspberry Pi 5, RP2040/Pico, wheel encoders, IMU, 2D LiDAR
+- **Software:** ROS 2 Jazzy, Ubuntu 24.04, C, C++, Python, RViz, Foxglove, rosbag
 
-This project develops a bottom-up autonomy stack on a physical two-wheeled robot. The work begins with motor calibration and embedded wheel-speed control, then connects odometry, waypoint motion control, LiDAR mapping, probabilistic localization, and SLAM.
+This project develops a bottom-up autonomy stack on a physical two-wheeled robot. It connects embedded wheel-speed control, encoder/IMU odometry, waypoint motion control, motion-compensated LiDAR mapping, Monte Carlo Localization (MCL), and simultaneous localization and mapping (SLAM).
 
-## Current highlights
+## Engineering highlights
 
-- Tuned and physically evaluated feedforward, PID, and combined feedforward-plus-PID wheel-speed controllers.
-- Reduced mean absolute wheel-speed tracking error to **0.0028 m/s** in the recorded controller comparison.
-- Implemented and tested a C++ rotate-translate-rotate waypoint controller on the physical MBot.
-- Completed four consecutive square trajectories while recording odometry and velocity commands for evaluation.
-- Generated and validated a **200 x 200-cell occupancy map at 0.05 m/cell** using physical LiDAR and odometry data.
-- Currently developing the Monte Carlo localization portion of the stack, including particle resampling, state propagation, sensor likelihoods, and weighted pose estimation.
+- Reduced physical wheel-speed tracking error to **0.0028 m/s MAE** with combined feedforward and PID control.
+- Implemented and tested a C++ rotate-translate-rotate waypoint controller through **four consecutive physical square trajectories**.
+- Built 5 cm-resolution occupancy maps from deskewed LiDAR scans and log-odds updates; Bresenham ray tracing averaged **4.04 ms per scan**, versus **6.67 ms** for divide-and-step.
+- Evaluated MCL against a reference trajectory at **0.026 m position RMSE**, compared with **0.149 m for odometry alone** (about **83% lower error**).
+- Profiled particle-filter execution on the Raspberry Pi from 100 to 1000 particles and selected **400 particles at about 64 ms/update**, preserving margin for a 10 Hz loop.
+- Tuned real-robot motion uncertainty to reduce final SLAM heading correction from **11.2 degrees to 1.1 degrees**, eliminating a rotated duplicate of the maze.
+
+## Localization result
+
+The final MCL evaluation compares the estimated trajectory (blue), reference trajectory (green), and raw odometry (yellow). The particle-filter estimate follows the reference closely while correcting accumulated odometry drift.
+
+![MCL estimated, reference, and odometry trajectories](media/mcl-trajectory.png)
+
+## Physical SLAM result
+
+The MBot autonomously drove the Checkpoint 1 maze out and back using the rotate-translate-rotate waypoint controller while the combined localization and mapping loop produced this occupancy map.
+
+![Final physical-maze SLAM map](media/final-slam-map.png)
+
+## Quantitative evaluation
+
+![Particle-filter scaling and SLAM heading-noise tuning](results/slam_evaluation.png)
+
+| Evaluation | Result |
+|---|---:|
+| MCL position RMSE | **0.026 m** |
+| Odometry-only position RMSE | 0.149 m |
+| Selected particle count | **400** |
+| Estimated update time at 400 particles | **~64 ms** |
+| Projected 10 Hz limit | **~641 particles** |
+| Bresenham map update | **4.04 ms/scan** |
+| Divide-and-step map update | 6.67 ms/scan |
+| Final heading correction after tuning | **1.1 degrees** |
 
 ## System architecture
 
 ```mermaid
-flowchart LR
-    S["Wheel encoders + LiDAR"] --> E["RP2040 embedded control"]
-    E --> R["ROS 2 on Raspberry Pi 5"]
-    R --> O["Odometry + motion control"]
-    O --> M["Occupancy mapping"]
-    M --> L["Monte Carlo localization"]
-    L --> C["Robot motion commands"]
+flowchart TD
+    O["Wheel odometry"] --> PF["Monte Carlo Localization"]
+    L["2D LiDAR scans"] --> PF
+    PF --> P["Estimated pose"]
+    P --> M["Deskew + Bresenham + log-odds update"]
+    L --> M
+    M --> G["Occupancy grid"]
+    G --> PF
 ```
-
-## Controller comparison
-
-The same recorded test compared three wheel-speed control modes against a **0.1937 m/s** command.
-
-| Controller | Mean measured speed (m/s) | MAE (m/s) | RMSE (m/s) |
-|---|---:|---:|---:|
-| Feedforward | 0.1606 | 0.0331 | 0.0502 |
-| PID | 0.1558 | 0.0379 | 0.0380 |
-| Feedforward + PID | **0.1916** | **0.0028** | **0.0036** |
-
-In this run, the combined controller produced approximately **92% lower MAE than feedforward alone** and **93% lower MAE than PID alone**. The combined design uses the calibrated feedforward model for the nominal motor command while feedback corrects residual tracking error.
-
-![Controller comparison](results/controller_comparison.png)
 
 ## Project milestones
 
 | Milestone | Engineering focus | Status |
 |---|---|---|
 | Motion and odometry | Motor calibration, wheel-speed control, encoder odometry, waypoint control | Complete |
-| Mapping and localization | LiDAR deskewing, occupancy grids, particle-filter localization, SLAM | In progress |
-| Planning and navigation | Global planning, obstacle costs, exploration, integrated navigation | Planned course milestone |
-| Vision | Camera calibration and fiducial perception | Planned course milestone |
+| Mapping and localization | LiDAR deskewing, occupancy grids, particle-filter localization, SLAM | Complete |
+| Planning and navigation | Global planning, obstacle costs, exploration, integrated navigation | Upcoming course milestone |
+| Vision | Camera calibration and fiducial perception | Upcoming course milestone |
 
 ## My contributions
 
@@ -59,16 +73,17 @@ In this run, the combined controller produced approximately **92% lower MAE than
 - Ran physical feedforward, PID, and combined-controller experiments and compared their tracking performance.
 - Tuned the selected wheel-speed controller through repeated physical tests.
 - Implemented and tested the rotate-translate-rotate motion-controller state machine in C++.
-- Repeated the square-driving experiment and adjusted the effective differential-drive geometry to reduce systematic turning error.
+- Repeated the square-driving experiment and adjusted effective differential-drive geometry to reduce systematic turning error.
 - Collected rosbag data and used odometry and velocity topics to evaluate physical behavior.
 
-### Mapping and localization
+### Mapping, localization, and SLAM
 
-- Brought up and tested the ROS 2 mapping pipeline on the physical MBot.
-- Generated and inspected a 10 m x 10 m occupancy grid with 0.05 m resolution.
-- Currently working through Monte Carlo localization components and validating estimated motion against the provided reference trajectory.
+- Contributed to physical bring-up and testing of the team-integrated ROS 2 mapping and localization pipeline.
+- Collected, replayed, and inspected real-robot data to evaluate occupancy-map alignment and localization behavior.
+- Contributed to MCL/SLAM parameter evaluation, including particle-count timing, trajectory comparison, and action-model noise tuning.
+- Documented the system architecture, test methodology, quantitative results, and physical-maze outcome.
 
-The checkpoint system is developed in a team. This portfolio distinguishes my individual work from team-integrated results; it does not imply sole authorship of the full course stack.
+Checkpoint 2 was developed with **Brandon McDonald, Samuel DeKoninck, and Natasha Sieh**. Team-level results are identified as such; this portfolio does not imply sole authorship of the full course stack.
 
 ## Engineering writeups
 
@@ -77,13 +92,8 @@ The checkpoint system is developed in a team. This portfolio distinguishes my in
 - [System architecture](docs/system-architecture.md)
 - [Results and measurement notes](results/README.md)
 
-## Media
-
-Physical-run videos, trajectory plots, map images, and localization visualizations will be added after the related checkpoint artifacts are finalized and cleared for public portfolio use. See [the media checklist](media/README.md).
-
 ## Academic-integrity notice
 
 This repository is a **documentation-only engineering portfolio**. It intentionally excludes course starter code, completed assignment TODOs, private GitLab history, provided rosbags, submitted reports, and teammates' source code. It is not intended to distribute solutions to ROB 330 coursework.
 
-The physical robot and starting software framework are provided through University of Michigan ROB 330. All results described here come from project experiments in Fall 2026 unless otherwise noted.
-
+The physical robot and starting software framework are provided through University of Michigan ROB 330. Results shown here come from Fall 2026 team experiments unless explicitly identified as individual work.

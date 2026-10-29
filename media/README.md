@@ -1,15 +1,16 @@
-# Media Checklist
+# Portfolio Media
 
-Add only original project media and confirm that it is acceptable for public portfolio use.
+## Included
 
-## Priority assets
+- `mcl-trajectory.png` - estimated, reference, and odometry trajectories from the MCL evaluation
+- `final-slam-map.png` - final out-and-back physical-maze SLAM map
+- `slam-heading-tuning.png` - map alignment across rotational-noise settings
 
-- `mbot-platform.jpg` - clear photograph of the physical robot
-- `square-run.mp4` or an external video link - best four-square demonstration
-- `square-trajectory.png` - odometry trajectory from the final run
-- `occupancy-map.png` - final Checkpoint 2 map
-- `localization-demo.mp4` - particle-filter or SLAM visualization
-- `estimated-vs-reference.png` - final localization comparison
+## Useful future additions
 
-Do not add course handouts, starter code screenshots, private repository history, provided datasets, submitted reports, or media containing credentials, IP addresses, or other identifying system information.
+- `mbot-platform.jpg` - clean photograph of the physical robot
+- `square-run.mp4` or external link - four-square waypoint demonstration
+- `slam-run.mp4` or external link - short physical-maze SLAM demonstration
+- `square-trajectory.png` - odometry trajectory from the final Checkpoint 1 run
 
+Only original project media should be added. Do not publish course handouts, starter code, private repository history, provided datasets, submitted reports, credentials, IP addresses, or teammate-owned material without permission.

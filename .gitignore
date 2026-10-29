@@ -3,6 +3,8 @@
 .idea/
 .DS_Store
 Thumbs.db
+__pycache__/
+*.pyc
 
 # Private course or experiment material
 *.db3

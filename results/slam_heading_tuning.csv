@@ -1,0 +1,6 @@
+k1,final_correction_deg,peak_correction_deg,map_result
+0.015,11.2,15.3,"two copies, rotated about 11 degrees"
+0.005,12.2,15.7,"two copies, rotated"
+0.001,8.6,10.2,"two copies, smaller rotation"
+0.0002,3.5,4.6,"one end doubled"
+0.00001,1.1,1.5,"single aligned maze"
